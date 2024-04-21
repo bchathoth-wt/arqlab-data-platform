@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
+    "moduleResolution": "NodeNext",
     "target": "ES2020",
-    "module": "commonjs",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "module": "NodeNext",
+    "esModuleInterop": true,
+    "lib": ["es2020", "dom"],
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
@@ -20,12 +19,17 @@
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "typeRoots": [
-      "./node_modules/@types"
-    ]
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "typeRoots": ["./node_modules/@types"],
+    "outDir": "build",
+    "rootDir": "./"
+    //"noEmit": true
   },
-  "exclude": [
-    "node_modules",
-    "cdk.out"
-  ]
+  "ts-node": {
+    "esm": true
+  },
+  "include": ["lib/**/*", "bin/**/*"],
+  "exclude": ["node_modules", "cdk.out"]
 }
