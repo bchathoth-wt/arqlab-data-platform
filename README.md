@@ -119,23 +119,23 @@ There are few interesting details to point out here:
 
 Table below explains how this source ode structured:
 
-| File / Folder                                                     | Description                                                                                                                                                         |
-| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [app.py](./app.py)                                                | Application entry point.                                                                                                                                            |
-| [deploy_stacks.py](lib/deploy_stacks.py)                          | Pipeline deploy stage entry point.                                                                                                                                  |
-| [iam_stack.py](lib/iam_stack/iam_stack.py)                        | Contains all resources to created IAM Roles                                                                                                                         |
-| [s3_bucket_zones_stack.py](lib/s3_stack/s3_bucket_zones_stack.py) | Stack creates S3 buckets - LandingZone, GoldZone and Log buckets. This also creates AWS KMS Keys to enabled server side encryption for all buckets.                 |
-| [lambda_stack.py](lib/lambda_fn_stack/non_func_lambda_fns.py)     | Contains resources for lambda functions                                                                                                                             |
-| [tagging.py](./lib/tagging.py)                                    | Program to tag all provisioned resources.                                                                                                                           |
-| [vpc_stack.py](lib/vpc_stack/vpc_stack.py)                        | Contains all resources related to the VPC used by Data Lake infrastructure and services. This includes: VPC, Security Groups, and VPC Endpoints( Gateway Endpoint). |
-| [glue_stack.py](./lib/glue_stack/glue_stack.py)                   | Contains script to provision AWS Glue resources                                                                                                                     |
-| [configuration.py](./lib/configuration.py)                        | Contains all configurations                                                                                                                                         |
-| [step_functions](lib/step_functions)                              | Contains all resources related to AWS Step Functions                                                                                                                |
-| [lib](./lib)                                                      | The cdk code for deploying stacks                                                                                                                                   |
-| [resources](./resources)                                          | This folder has static resources such as architecture diagrams, developer guide etc.                                                                                |
-| glue_etl_job_auditor                                              | Folder to keep lambada code for auditing Glue ETL Jobs                                                                                                              |
-| glue_etl_script                                                   | Contains a copy of glue ETL scripts                                                                                                                                 |
-| [assets](./lib/assets)                                            | Contains assets for S3 deployment (predefined prefixes and default files)                                                                                           |
+| File / Folder                                          | Description                                                                                                                                                         |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [data-platform.ts](./bin/data-platform.ts)             | Application entry point.                                                                                                                                            |
+| [data-platform-stack.ts](./lib/data-platform-stack.ts) | Pipeline deploy stage entry point.                                                                                                                                  |
+| [iam_stack](lib/iam_stack/iam_stack.ts)                | Contains all resources to created IAM Roles                                                                                                                         |
+| [s3_stack](lib/s3_stack/index.ts)                      | Stack creates S3 buckets - LandingZone, GoldZone and Log buckets. This also creates AWS KMS Keys to enabled server side encryption for all buckets.                 |
+| [lambda_stack](lib/lambda_fn_stack/index.ts)           | Contains resources for lambda functions                                                                                                                             |
+| [tagging](./lib/tagging/tagging.ts)                    | Program to tag all provisioned resources.                                                                                                                           |
+| [vpc_stack](lib/vpc_stack/vpc_stack.ts)                | Contains all resources related to the VPC used by Data Lake infrastructure and services. This includes: VPC, Security Groups, and VPC Endpoints( Gateway Endpoint). |
+| [glue_stack](./lib/glue_stack/glue_stack.ts)           | Contains script to provision AWS Glue resources                                                                                                                     |
+| [config](./lib/config)                                 | Contains all configurations                                                                                                                                         |
+| [step_functions](lib/step_functions)                   | Contains all resources related to AWS Step Functions                                                                                                                |
+| [lib](./lib)                                           | The cdk code for deploying stacks                                                                                                                                   |
+| [resources](./resources)                               | This folder has static resources such as architecture diagrams, developer guide etc.                                                                                |
+| glue_etl_job_auditor                                   | Folder to keep lambada code for auditing Glue ETL Jobs                                                                                                              |
+| glue_etl_script                                        | Contains a copy of glue ETL scripts                                                                                                                                 |
+| [assets](./lib/assets)                                 | Contains assets for S3 deployment (predefined prefixes and default files)                                                                                           |
 
 ---
 
@@ -147,7 +147,6 @@ This repository has the following automation scripts to complete steps before th
 | --- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | 1   | [bootstrap_deployment_account.sh](./lib/prerequisites/bootstrap_deployment_account.sh) | Used to bootstrap deployment account (currently this method is not being used) |
 | 2   | [bootstrap_target_account.sh](./lib/prerequisites/bootstrap_target_account.sh)         | Used to bootstrap target environments for example dev, test, and production.   |
-| 3   | [configure_account_secrets.py](./lib/prerequisites/configure_account_secrets.py)       | Used to configure account secrets for e.g. GitHub access token.                |
 
 ---
 
@@ -185,98 +184,26 @@ This section has various steps you need to perform before you deploy data lake r
 
 Environment bootstrap is standard CDK process to prepare an AWS environment ready for deployment. Follow the steps:
 
-1.  Go to project root directory where [app.py](app.py) file exists
+**Important**:
 
-2.  Create Python virtual environment. This is a one-time activity.
+1. This command is based on the feature [Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html).
+1. Configure [AWS CLI to use AWS SSO](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html) to login using SSO via CLI.
 
-    ```bash
-    python3 -m venv .venv
-    ```
+1. Before you bootstrap **dev** account, set environment variable
 
-3.  Activate Python virtual environment
+   ```bash
+   export ENV=<enviroment e.g. Dev, Test or Prod>
+   export AWS_ACCOUNT=<aws account>
+   export AWS_REGION=<region>
+   ```
 
-    ```bash
-    source .venv/bin/activate
-    ```
+1. Bootstrap **dev** account
 
-4.  Install dependencies
+   **Important:** Your configured environment _must_ target the Dev account
 
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-5.  Expected output: run the below command and verify all dependencies are installed
-
-    ```bash
-    ls -lart .venv/lib/python3.9/site-packages/
-    ```
-
-    **Important**:
-
-    1. This command is based on the feature [Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html).
-    1. Configure [AWS CLI to use AWS SSO](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html) to login using SSO via CLI.
-
-6.  Before you bootstrap **dev** account, set environment variable
-
-    ```bash
-    export ENV=Dev
-    ```
-
-7.  Bootstrap **dev** account
-
-    **Important:** Your configured environment _must_ target the Dev account
-
-    ```bash
-    cdk bootstrap aws://<dev account>/<region> --profile <your aws profile to Dev>
-    ```
-
-    When you see the following text, enter **y**, and press enter/return
-
-8.  Expected outputs:
-
-    1. In your terminal, you see ✅ Environment aws://account/eu-west-2 bootstrapped.
-
-9.  You see an S3 bucket created in account. The name is like `cdk-hnb659fds-assets-<dev_account_id>-<region>`
-
-10. Before you bootstrap **test** account, set environment variable
-
-    ```bash
-    export ENV=Test
-    ```
-
-11. Bootstrap test account
-
-    **Important:** Your configured environment _must_ target the Test account
-
-    ```bash
-    cdk bootstrap aws://<test account>/<region> --profile <your aws profile to Test>
-    ```
-
-12. Expected outputs:
-
-    1.  In your terminal, you see ✅ Environment aws://test_account_id/aws-region bootstrapped.
-
-    1.  You see an S3 bucket created in central deployment account. The name is like `cdk-hnb659fds-assets-<test_account_id>-<aws-region>`
-
-13. Before you bootstrap **prod** account, set environment variable
-
-    ```bash
-    export ENV=Prod
-    ```
-
-14. Bootstrap Prod account
-
-    **Important:** Your configured environment _must_ target the Prod account
-
-    ```bash
-    cdk bootstrap aws://<Prod account>/<region> --profile <your aws profile to Prod>
-    ```
-
-15. Expected outputs:
-
-    1.  In your terminal, you see ✅ Environment aws://prod_account_id/aws-region bootstrapped.
-
-    1.  You see an S3 bucket created in central deployment account. The name is like `cdk-hnb659fds-assets-<prod_account_id>-<aws-region>`
+   ```bash
+   npm run cdk bootstrap aws://<dev account>/<region>
+   ```
 
 ---
 
@@ -286,7 +213,7 @@ Before we deploy our resources we must provide the manual variables and upon dep
 
 1. **Note:** You can safely commit these values to your repository
 
-1. Go to [configuration.py](./lib/configuration.py) and make sure the values under `local_mapping` dictionary within the function `get_local_configuration` are correct for the environments.
+1. Go to [config](./lib/config) and make sure the values under `local_mapping` Record within the function `get_local_configuration` are correct for the environments.
 
 ---
 
@@ -327,13 +254,14 @@ Configure your AWS profile to target the Deployment account as an Administrator 
 
 1. Run the command for deploy all stacks to all environment
    ```
-   cdk deploy --all --profile <your aws profile name>
+   npm run cdk-deploy-all
    ```
 1. Run below command to deploy a specific stack to specific env
 
    ```
-   cdk deply <stack id> --profile <your aws profile name>
-   e.g. cdk deploy Dev/DevDataLakeInfrastructureS3BucketZones --profile <your aws profile name>
+   npm run cdk deply <stack id>
+
+   e.g. npm run cdk deploy Dev/DevDataLakeInfrastructureS3BucketZones
 
    ```
 
@@ -349,7 +277,7 @@ Configure your AWS profile to target the Deployment account as an Administrator 
 
 ### Clean up
 
-1. Delete stacks using the command `cdk destroy --all`. When you see the following text, enter **y**, and press enter/return.
+1. Delete stacks using the command `npm run cdk destroy --all`. When you see the following text, enter **y**, and press enter/return.
 
    ```bash
    Are you sure you want to delete: TestDataLakeKInfrastructurePipeline, ProdDataLakeInfrastructurePipeline, DevDataLakeInfrastructurePipeline (y/n)?
@@ -365,7 +293,7 @@ Configure your AWS profile to target the Deployment account as an Administrator 
 
    **Note:**
 
-   1. Deletion of **Dev-DevDataLakeCDKInfrastructureS3BucketZones** will delete the S3 buckets (raw, conformed, and purpose-built). This behavior can be changed by modifying the retention policy in [s3_bucket_zones_stack.py](lib/s3_stack/s3_bucket_zones_stack.py#L38)
+   1. Deletion of **Dev-DevDataLakeCDKInfrastructureS3BucketZones** will delete the S3 buckets (raw, conformed, and purpose-built). This behavior can be changed by modifying the retention policy in [s3_stack](lib/s3_stack/index.ts)
 
 1. To delete stacks in **test** account, log onto Dev account, go to AWS CloudFormation console and delete the following stacks:
 
