@@ -45,8 +45,6 @@ In this section explains the Data Platform architecture and its infrastructure.
 
 ### Architecture Overview
 
-The diagram below shows the MVP version of Data Platform Architecture - DRAFT to enable the phase-wise delivery of the Data Platform.
-
 The Data Lake can have multiple producers which ingest files into the landing zone bucket. The architecture uses AWS Lambda, Glue ETL and AWS Step Functions for orchestration and scheduling of ETL workloads to clean, validate and generate rich metadata. AWS Glue Catalog will be used to store the metadata.
 
 AWS Glue Studio will be used to extract and transform the data into a relational data model and load it into a Data Mart (PostgreSQL or Aurora DB).
