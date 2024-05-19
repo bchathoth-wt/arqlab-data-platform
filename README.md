@@ -1,6 +1,6 @@
 ![Language-Support: Stable](https://img.shields.io/badge/language--support-stable-success.svg?style=for-the-badge)
 
-# Data Platform Infrastructure Deployment
+# A Data Platform
 
 This solution helps to build and deploy data lake infrastructure on AWS using AWS CDK.
 CDK stands for Cloud Development Kit. It is an open source software development framework to define your cloud application resources using familiar programming languages.
@@ -10,6 +10,7 @@ This solution helps you:
 1. deploy data lake infrastructure on AWS using CDK
 1. increase the speed of prototyping, testing, and deployment of new ETL workloads
 
+### This repository contains only the S3 Zones stack as a sample. If you require the full version of the code, please contact us [here](https://www.arqmind.com/dataplatform) 
 ---
 
 ## Contents
