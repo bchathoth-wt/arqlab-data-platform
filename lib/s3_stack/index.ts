@@ -18,7 +18,7 @@ import {
   getEnvironmentConfiguration,
   getLogicalIdPrefix,
   getResourceNamePrefix,
-} from '../config/index.js';
+} from '../config/index.ts';
 import { StorageClass } from 'aws-cdk-lib/aws-s3';
 import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 

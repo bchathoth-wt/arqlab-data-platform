@@ -21,11 +21,12 @@
     "strictPropertyInitialization": false,
     "skipLibCheck": true,
     "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
     "forceConsistentCasingInFileNames": true,
     "typeRoots": ["./node_modules/@types"],
     "outDir": "build",
-    "rootDir": "./"
-    //"noEmit": true
+    "rootDir": "./",
+    "noEmit": true
   },
   "ts-node": {
     "esm": true

@@ -28,7 +28,7 @@ if (process.env.TARGEG_ENV === undefined) {
 console.log('Starting CDK Synth....');
 
 const app = new cdk.App();
-new DataPlatformStack(app, 'DataPlatformTsStack', targetEnv, {
+new DataPlatformStack(app, 'DataPlatformStack', targetEnv, {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
