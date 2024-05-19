@@ -1,6 +1,6 @@
 ![Language-Support: Stable](https://img.shields.io/badge/language--support-stable-success.svg?style=for-the-badge)
 
-# Data Platform Infrastructure Deployment
+# A Data Platform
 
 This solution helps to build and deploy data lake infrastructure on AWS using AWS CDK.
 CDK stands for Cloud Development Kit. It is an open source software development framework to define your cloud application resources using familiar programming languages.
@@ -10,6 +10,7 @@ This solution helps you:
 1. deploy data lake infrastructure on AWS using CDK
 1. increase the speed of prototyping, testing, and deployment of new ETL workloads
 
+### This repository contains only the S3 Zones stack as a sample. If you require the full version of the code, please contact us [here](https://www.arqmind.com/dataplatform) 
 ---
 
 ## Contents
@@ -44,8 +45,6 @@ In this section explains the Data Platform architecture and its infrastructure.
 ---
 
 ### Architecture Overview
-
-The diagram below shows the MVP version of Data Platform Architecture - DRAFT to enable the phase-wise delivery of the Data Platform.
 
 The Data Lake can have multiple producers which ingest files into the landing zone bucket. The architecture uses AWS Lambda, Glue ETL and AWS Step Functions for orchestration and scheduling of ETL workloads to clean, validate and generate rich metadata. AWS Glue Catalog will be used to store the metadata.
 
